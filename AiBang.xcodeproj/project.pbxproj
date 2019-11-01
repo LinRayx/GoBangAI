@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		09FAA43123693D9100F53D3A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09FAA43023693D9100F53D3A /* main.cpp */; };
+		09FAA44223698B2F00F53D3A /* acmechine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09FAA44023698B2F00F53D3A /* acmechine.cpp */; };
+		09FAA4452369A5E800F53D3A /* aigobang.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09FAA4432369A5E800F53D3A /* aigobang.cpp */; };
+		09FAA448236AC93A00F53D3A /* PossiblePosition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09FAA446236AC93900F53D3A /* PossiblePosition.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +28,12 @@
 /* Begin PBXFileReference section */
 		09FAA42D23693D9100F53D3A /* AiBang */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AiBang; sourceTree = BUILT_PRODUCTS_DIR; };
 		09FAA43023693D9100F53D3A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		09FAA44023698B2F00F53D3A /* acmechine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = acmechine.cpp; sourceTree = "<group>"; };
+		09FAA44123698B2F00F53D3A /* acmechine.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = acmechine.hpp; sourceTree = "<group>"; };
+		09FAA4432369A5E800F53D3A /* aigobang.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = aigobang.cpp; sourceTree = "<group>"; };
+		09FAA4442369A5E800F53D3A /* aigobang.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = aigobang.hpp; sourceTree = "<group>"; };
+		09FAA446236AC93900F53D3A /* PossiblePosition.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PossiblePosition.cpp; sourceTree = "<group>"; };
+		09FAA447236AC93A00F53D3A /* PossiblePosition.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PossiblePosition.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
