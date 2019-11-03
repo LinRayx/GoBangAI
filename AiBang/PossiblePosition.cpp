@@ -18,6 +18,12 @@ PossiblePosition::PossiblePosition(int _WIDTH, int _HEIGHT) {
     WIDTH = _WIDTH;
     HEIGHT = _HEIGHT;
 }
+
+void PossiblePosition::reset() {
+    memset(vis, 0, sizeof vis);
+    points.clear();
+    hi.clear();
+}
 void PossiblePosition::addPossiblePosition(int x, int y) {
     vis[x][y] = 1;
     

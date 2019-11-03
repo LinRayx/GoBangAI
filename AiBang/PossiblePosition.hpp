@@ -25,7 +25,9 @@ public:
     void addPossiblePosition(int x, int y);
     void rollback(int x, int y);
     std::set<std::pair<int,int> > getCurrentPossiblePos() {return points;};
-private:    
+    void reset();
+private:
+    
     std::set<std::pair<int,int> > points;
     std::vector<History> hi;
     int WIDTH;

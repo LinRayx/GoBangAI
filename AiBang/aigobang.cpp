@@ -8,16 +8,27 @@ AiGoBang::AiGoBang()
     root = std::make_shared<AcMechineNode>();
     memset(Scores, 0, sizeof Scores);
     memset(AllScores, 0, sizeof AllScores);
-    DEPTH = 8;
+    
+    DEPTH = 4;
     WIDTH = 15; HEIGHT = 15;
     pp = std::make_shared<PossiblePosition>(WIDTH, HEIGHT);
     initBoard();
     initScoreBoard();
+    random64();
     randomBoardZobristValue();
     currentZobristValue = random64();
     
 }
 
+void AiGoBang::reset() {
+    initBoard();
+    pp->reset();
+    memset(Scores, 0, sizeof Scores);
+    memset(AllScores, 0, sizeof AllScores);
+    random64();
+       randomBoardZobristValue();
+       currentZobristValue = random64();
+}
 
 int AiGoBang::EvaluatePoint(int x, int y, int role) {
     int i = x , j = y, sum = 0;
@@ -53,7 +64,7 @@ int AiGoBang::EvaluatePoint(int x, int y, int role) {
 
 
 
-int AiGoBang::AlphaBeta(int depth, int alpha, int beta, int color) {
+int AiGoBang::AlphaBeta(int depth, int alpha, int beta, int role) {
 //    show();
     HashItem::Flag flag = HashItem::ALPHA;
     int score = getHashItemScore(depth, alpha, beta);
@@ -61,15 +72,13 @@ int AiGoBang::AlphaBeta(int depth, int alpha, int beta, int color) {
         return score;
     }
     
-    int sc1 = Evaluate(color);
-    int sc2 = Evaluate(3-color);
+    int sc1 = Evaluate(role);
+    int sc2 = Evaluate(3-role);
     
     if(sc1 >= 50000) {
-//        std::cout << "sc1" <<std::endl;
         return 80000-1000+(DEPTH-depth);
     }
     if(sc2 >= 50000) {
-//        std::cout << "sc2" <<std::endl;
         return -80000+1000+(DEPTH-depth);
     }
     if(depth == 0) {
@@ -81,7 +90,7 @@ int AiGoBang::AlphaBeta(int depth, int alpha, int beta, int color) {
     std::set<std::pair<int,int> > tmp = pp->getCurrentPossiblePos();
     for(auto& p: tmp) {
 //        std::cout << p.first <<" " << p.second << std::endl;
-        prioMovePoint.insert({p.first,p.second,EvaluatePoint(p.first, p.second, 1)});
+        prioMovePoint.insert({p.first,p.second,EvaluatePoint(p.first, p.second, HUMEM)});
      
     }
     int cnt = 0;
@@ -98,14 +107,14 @@ int AiGoBang::AlphaBeta(int depth, int alpha, int beta, int color) {
         if(board[i][j] == 0) {
             cnt++;
             
-            setPos(i, j, color);
+            setPos(i, j, role);
             
             updateBoard(std::make_pair(i, j));
            
-            int val = -AlphaBeta(depth-1, -beta, -alpha, 3-color);
+            int val = -AlphaBeta(depth-1, -beta, -alpha, 3-role);
 //            if (depth == DEPTH)
 //                std::cout << "score(" << p.x << "," << p.y << "):" << val << std::endl;
-            clearPos(i,j,color);
+            clearPos(i,j,role);
             
             updateBoard(std::make_pair(i, j));
             if(val >= beta) {
@@ -125,61 +134,13 @@ int AiGoBang::AlphaBeta(int depth, int alpha, int beta, int color) {
     recordHashItem(depth, alpha, flag);
     return alpha;
 }
-//int AiGoBang::Evaluate(int color) {
-////    show();
-//    int sum = 0;
-//
-//
-//    std::string t="";
-//
-//
-//    for(int i = 0; i < WIDTH; ++i) {
-//        for(int j = 0; j < WIDTH; ++j) {
-//            t += board[i][j]+'0';
-//        }
-//        sum += match(std::move(t), color);
-//        t.clear();
-//        for(int j = 0; j < WIDTH; ++j) {
-//            t += board[j][i]+'0';
-//        }
-//        sum += match(std::move(t), color);
-//        t.clear();
-//    }
-//
-//    for(int i = 0; i < WIDTH; ++i) {
-//        for(int x = i, y = 0; x < WIDTH && y < WIDTH; x++,y++) {
-//            t += board[x][y]+'0';
-//        }
-//        sum += match(std::move(t), color);
-//        t.clear();
-//        for(int x = 0, y = i; x < WIDTH && y < WIDTH; x++,y++) {
-//            t += board[x][y]+'0';
-//        }
-//        sum += match(std::move(t), color);
-//        t.clear();
-//    }
-//
-//    for(int i = 0; i < WIDTH; ++i) {
-//        for(int x = i, y = WIDTH; x <= WIDTH && y >= 0; x++,y--) {
-//            t += board[x][y]+'0';
-//        }
-//        sum += match(std::move(t), color);
-//        t.clear();
-//        for(int x = 0, y = i; x <= WIDTH && y >= 0; x++,y--) {
-//            t += board[x][y]+'0';
-//        }
-//        sum += match(std::move(t), color);
-//        t.clear();
-//    }
-//
-//    return sum;
-//}
 
-void AiGoBang::getNextPos(int color) {
-    AlphaBeta(DEPTH, -100000000, 100000000, color);
-    std::cout << searchPos.first << " " << searchPos.second << std::endl;
+void AiGoBang::getNextPos() {
+    AlphaBeta(DEPTH, -100000000, 100000000, COMPUTER);
+//    std::cout << searchPos.first << " " << searchPos.second << std::endl;
 }
 
+/* ac自动机模块 begin */
 void AiGoBang::insert(std::string & str, int sc) {
     int len = int(str.length());
     std::shared_ptr<AcMechineNode> tmp = root;
@@ -246,100 +207,81 @@ int AiGoBang::match(std::string && str, int color) {
     }
     return sum;
 }
+
+/* ac自动机模块end */
+
 // black 1 white 2
 void AiGoBang::initScoreBoard() {
 
-    
-    
-    
-    //1
     setBlackScoreBoard("11111");
-
     addScore(50000);
     //2
     setBlackScoreBoard("011110");
-
     addScore(4320);
     //3
     setBlackScoreBoard("011100");
-
     addScore(720);
     //4
     setBlackScoreBoard("001110");
-
     addScore(720);
     //5
     setBlackScoreBoard("011010");
-
     addScore(720);
     //6
     setBlackScoreBoard("010110");
-
     addScore(720);
     //7
     setBlackScoreBoard("11110");
-
     addScore(720);
     //8
     setBlackScoreBoard("01111");
-
     addScore(720);
     //9
     setBlackScoreBoard("11011");
-
     addScore(720);
     //10
     setBlackScoreBoard("10111");
-
     addScore(720);
     //11
     setBlackScoreBoard("11101");
-
     addScore(720);
     //12
     setBlackScoreBoard("001100");
-
     addScore(120);
     //13
     setBlackScoreBoard("001010");
-
     addScore(120);
     //14
     setBlackScoreBoard("010100");
-
     addScore(120);
     //15
     setBlackScoreBoard("000100");
-
     addScore(20);
     //16
     setBlackScoreBoard("001000");
-
     addScore(20);
-
     for(int i = 0; i < black_score_board.size(); ++i) {
         insert(black_score_board[i], scores[i]); // 1
-//        insert(white_score_board[i], scores[i]);
     }
     buildFail();
 }
 
 void AiGoBang::test() {
 //    match("0110101010111011011111011211110", 1);
-    int color = 1;
 //    setPos(7, 7, 3-color);
 //    match("000000210000000",1);
+    setHUMANFirst();
     while(1) {
         show();
         int nx, ny;
         std::cout << "请输入下棋位置";
         std::cin >> nx >> ny;
-        setPos(nx,ny,color);
+        setPos(nx,ny,HUMEM);
         updateBoard(std::make_pair(nx, ny));
         blackChess.push_back(std::make_pair(nx, ny));
-        getNextPos(3-color);
+        getNextPos();
         whiteChess.push_back(searchPos);
-        setPos(searchPos.first,searchPos.second, 2);
+        setPos(searchPos.first,searchPos.second, COMPUTER);
         updateBoard(std::make_pair(searchPos.first,searchPos.second));
     }
 }
@@ -364,7 +306,7 @@ void AiGoBang::updateBoard(std::pair<int, int> p) {
     std::string line2[4];
     int x = p.first, y = p.second;
     for(int i = 0; i < WIDTH; ++i) {
-     
+
         line1[0] += board[x][i]+'0'; // -
         line2[0] += board[x][i]+'0';
         line1[1] += board[i][y]+'0'; // |
@@ -384,8 +326,8 @@ void AiGoBang::updateBoard(std::pair<int, int> p) {
         
     int line1score[4], line2score[4];
     for(int i = 0; i < 4; ++i) {
-        line1score[i] = match(std::move(line1[i]), 1);
-        line2score[i] = match(std::move(line2[i]), 2);
+        line1score[i] = match(std::move(line1[i]),1);
+        line2score[i] = match(std::move(line2[i]),2);
     }
     
     // - | \ /
@@ -435,7 +377,7 @@ void AiGoBang::updateBoard(std::pair<int, int> p) {
     }
 }
 
-int AiGoBang::Evaluate(int color) {
-    if(color == 1) return AllScores[0];
+int AiGoBang::Evaluate(int role) {
+    if(role == 1) return AllScores[0];
     return AllScores[1];
 }

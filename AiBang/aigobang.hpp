@@ -22,6 +22,13 @@ private:
     int WIDTH;
     int HEIGHT;
     int DEPTH;
+    
+    int Scores[3][72];
+    int AllScores[3];
+            
+    int COMPUTER;
+    int HUMEM;
+    
     struct PointEva {
         int x,y;
         int eva;
@@ -109,15 +116,18 @@ private:
         return UNKNOWN_SCORE;
     }
 
-public:
-    AiGoBang();
-    void getNextPos(int color);
+                    
+private:
+    
+    void getNextPos();
 
-    void test();
     void show();
 
     void initBoard() {
         board.resize(16);
+        canPossibleMovePoint.clear();
+        blackChess.clear();
+        whiteChess.clear();
         for(int i = 0; i < 16; ++i)
             board[i].resize(16);
         
@@ -148,7 +158,6 @@ public:
     
     void initScoreBoard();
     
-    // void initBoard(const std::vector<std::pair<QPoint, int> > &&);
     void setBlackScoreBoard(const std::string&& s) {
         black_score_board.push_back(s);
         
@@ -170,10 +179,38 @@ public:
     int EvaluatePoint(int x, int y, int role);
     
     void updateBoard(std::pair<int,int> p);
+                    
     
+public:
+    /* 开放接口 */
+    void test();// 默认人类先下
+    AiGoBang();
+    std::pair<int,int> getCOMPUTERMove(int x, int y) {
+         setPos(x, y, HUMEM);
+         getNextPos();
+         setPos(searchPos.first,searchPos.second, COMPUTER);
+         return searchPos;
+    }
+    void reset();
+    void setLevel(int level = 7) {
+        DEPTH = level;
+    }
+    void setWIDTH(int _WIDTH = 15) {
+        WIDTH = _WIDTH;
+    }
+    void setHEIGHT(int _HEIGHT = 15) {
+        HEIGHT = _HEIGHT;
+    }
+    void setCOMPUTERFirst() {
+        COMPUTER = 1;
+        HUMEM = 2;
+        setPos(7, 7, COMPUTER);
+    }
+    void setHUMANFirst() {
+        COMPUTER = 2;
+        HUMEM = 1;
+    }
 private:
-    
-    
     std::vector< std::vector<int> > board;
     std::vector<std::string> black_score_board;
     std::vector<std::string> white_score_board;
@@ -181,16 +218,10 @@ private:
     std::vector<std::pair<int,int> > blackChess;
     std::vector<int> scores;
     std::shared_ptr<AcMechineNode> root;
-    int COMPUTER = 2;
     std::pair<int,int> searchPos;
     
     std::set<std::pair<int,int> > canPossibleMovePoint;
     std::shared_ptr<PossiblePosition> pp;
-    
-    
-    
-    int Scores[3][72];
-    int AllScores[3];
 };
 
 #endif // AIGOBANG_H
